@@ -4,17 +4,18 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "standard && node my-tests.js"
+    "test": "standard"
   },
   "author": "Ayush Chauhan",
   "license": "ISC",
   "dependencies": {
     "botbuilder": "^3.13.1",
-    "mqtt": "^2.15.0",
+    "mqtt": "^2.15.1",
     "restify": "^6.3.4",
     "xhr": "^2.4.1"
   },
   "devDependencies": {
+    "dotenv": "^4.0.0",
     "standard": "^10.0.3"
   }
 }

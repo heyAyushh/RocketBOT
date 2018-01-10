@@ -2,6 +2,7 @@
 
 var restify = require('restify')
 var builder = require('botbuilder')
+var toggle = require('./toggle')
 
 // Setup Restify Server
 var server = restify.createServer()
@@ -19,56 +20,54 @@ var connector = new builder.ChatConnector({
 server.post('/api/messages', connector.listen())
 // Create our bot to listen in on the chat connector.
 
-global.bot = new builder.UniversalBot(connector, session => {
-  session.beginDialog(' start ')
+var bot = new builder.UniversalBot(connector, session => {
+  session.beginDialog(' START ')
 })
 
-bot.dialog(' start ', [
+bot.dialog(' START ', [
 
-  function (session, next) {
-    builder.Prompts.choice(session, ' Wanna toggle me ?', ' Yeah | Nah ')
+  function (session) {
+    builder.Prompts.choice(session, ' Wanna toggle me ?', ' Yeah | Nah ', { listStyle: builder.ListStyle.button })
   },
-    /* builder.Prompts.confirm(session, 'Are you sure you wish to cancel your order?') */
 
-  function (session, results, next) {
-    if (session.results.response === ' Yeah ') {
+  function (session, results) {
+    if (results.response.entity === ' Yeah ') {
       session.sendTyping()
-      builder.Prompts.choice(session, ' You wanna turn me ? ', ' ON | OFF ')
+      session.beginDialog('CHOICE')
     } else {
       session.sendTyping()
       session.send(' Never Mind 😅 ')
       session.endDialogWithResult(results)
     }
+  }
+])
+
+bot.dialog('CHOICE', [
+  function (session) {
+    builder.Prompts.choice(session, ' You wanna turn me ? ', ' ON | OFF ', { listStyle: builder.ListStyle.button })
   },
 
   function (session, results) {
-    if (session.results.response === ' ON ') {
-      bot.beginDialog('ON')
+    if (results.response.entity === ' ON ') {
+      session.beginDialog('ON')
     } else {
-      if (session.results.response === ' OFF ') {
-        bot.beginDialog('OFF')
-      }
-      session.endDialogWithResult(results)
+      session.beginDialog('OFF')
     }
   }
 ])
 
 bot.dialog('ON', [
-  {
-    function (session) {
-    }
+  function (session) {
+    toggle.ON()
+    session.send(' I turned it ON 💡')
+    session.endDialogWithResult()
   }
 ])
 
 bot.dialog('OFF', [
-  {
-    function (session) {}
-  }
-])
-
-bot.dialog('CHOICE', [{
   function (session) {
-    builder.Prompts.choice(session, ' You wanna turn me ? ', ' ON | OFF ')
+    toggle.OFF()
+    session.send(' I turned it OFF 💡')
+    session.endDialogWithResult()
   }
-}
 ])

@@ -1,5 +1,9 @@
 var mqtt = require('mqtt')
 
+if (process.env.NODE_ENV !== 'production') {
+  require('dotenv').load()
+}
+
 var client = mqtt.connect({
   host: process.env.MQTThost,
   port: process.env.MQTTport,
@@ -7,17 +11,16 @@ var client = mqtt.connect({
   password: process.env.MQTTpassword
 })
 
-let topic = process.env.MQTTtopic
-
 client.on('connect', function () {
-  client.subscribe(topic)
-  client.publish(topic, 'Hello from the BOT side :p')
+  client.subscribe(process.env.MQTTtopic)
+  client.publish(process.env.MQTTtopic, 'Hello from the BOT side :p')
 })
 
-/* client.on('message', function (topic, message) {
-  // message is Buffer
-  console.log(message.toString())
-  client.end()
-}) */
-
-require('dotenv').config()
+module.exports = {
+  ON: function () {
+    client.publish(process.env.MQTTtopic, '1')
+  },
+  OFF: function () {
+    client.publish(process.env.MQTTtopic, '0')
+  }
+}
