@@ -1,0 +1,7 @@
+{
+    "name": "RocketBOT",
+    "description": "A chatbot sample for MQTT",
+    "repository": "https://github.com/heyAyushh/RocketBOT",
+    "logo": "https://node-js-sample.herokuapp.com/node.png",
+    "keywords": ["node", "botbuilder", "mqtt"]
+  }
